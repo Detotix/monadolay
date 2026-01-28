@@ -1,11 +1,14 @@
-from dearpygui.dearpygui import window, add_button, create_context, create_viewport, setup_dearpygui, show_viewport, is_dearpygui_running, render_dearpygui_frame, destroy_context
-from shared import shared
+from dearpygui.dearpygui import window, get_value,  get_item_label, add_text, add_button, add_input_float, create_context, create_viewport, setup_dearpygui, show_viewport, is_dearpygui_running, render_dearpygui_frame, destroy_context
+from shared import shared, positioning
 import other.system
 
 def change_rendermode():
     shared.rendermode=not shared.rendermode
     print("[GUI] changed rendermode")
 
+def change_mutepos(sender):
+    positioning.datachange=True
+    positioning.positions["mute"][get_item_label(sender)]=get_value(sender)
 def change_showmute():
     mic_muted=other.system.is_mic_muted()
     print("[GUI]", mic_muted)
@@ -21,9 +24,15 @@ def open_devoptions():
 def start_gui():
     create_context()
     create_viewport(title='monadolay vr', width=600, height=300)    
+
     with window(label="vr", no_close=True):
         add_button(label="open devtools",callback=open_devoptions)
 
+    with window(label="positioning", no_close=True):
+        add_text("use this to position the mute icon in vr")
+        add_input_float(label="x", default_value=positioning.positions["mute"]["x"], callback=change_mutepos)
+        add_input_float(label="y", default_value=positioning.positions["mute"]["y"], callback=change_mutepos)
+        add_input_float(label="z", default_value=positioning.positions["mute"]["z"], callback=change_mutepos)
     setup_dearpygui()
     show_viewport()
     while is_dearpygui_running():

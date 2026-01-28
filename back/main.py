@@ -47,6 +47,9 @@ def mute_click():
 
 def main():
     print(__file__)
+
+    shared.show_mute=other.system.is_mic_muted()
+
     server_thread=Thread(target=server.run, daemon=True)
     server_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)

@@ -1,10 +1,10 @@
 local json = require 'lib/json'
 local http = require 'http'
+local shared = require 'shared'
 
 local time=0
 local h1={}
 local h2={}
-data={rendermode=false, show_mute=false}
 
 function lovr.load()
 end
@@ -13,12 +13,16 @@ function lovr.draw(pass)
     time=os.clock()+0.005
     pcall(function()
       status, webdata, headers = http.request("http://localhost:1469")
-      data=json.decode(webdata)
+      shared.data=json.decode(webdata)
+      if shared.data["datachange"] then
+        status2, webdata2, headers2 = http.request("http://localhost:1469/position")
+        shared.positioning=json.decode(webdata2)
+      end
     end)
   end
   --pass:setColor(.1, .1, .12)
   --pass:plane(0, 0, 0, 100, 100, -math.pi / 2, 1, 0, 0)
-  if data["rendermode"] then
+  if shared.data["rendermode"] then
     pass:setColor(.2, .2, .2)          
     pass:plane(0, -0.09, 0, 100, 100, -math.pi / 2, 1, 0, 0, 'line', 100, 100)
     pass:setColor(.0, .255, .0)  
@@ -29,11 +33,11 @@ function lovr.draw(pass)
     pass:setColor(.255, .0, .0)  
     pass:sphere(h2.x,h2.y,h2.z, 0.05, 0, 0, 1, 0, 48, 24)
   end
-  if data["show_mute"] then
+  if shared.data["show_mute"] then
     angle, ax, ay, az = lovr.headset.getOrientation()
     x, y, z = lovr.headset.getPosition()
-  
-    local offset_x, offset_y, offset_z = -0.4, -0.37, -0.5
+
+    local offset_x, offset_y, offset_z = shared.positioning["mute"]["x"], shared.positioning["mute"]["y"], shared.positioning["mute"]["z"]
     local quat = {ax, ay, az, math.cos(angle/2)}
     local cos_a = math.cos(angle / 2)
     local sin_a = math.sin(angle / 2)
