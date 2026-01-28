@@ -4,16 +4,17 @@ local http = require 'http'
 local time=0
 local h1={}
 local h2={}
-local data={rendermode=false, show_mute=false}
+data={rendermode=false, show_mute=false}
 
 function lovr.load()
-  time=os.clock()+0.05
 end
 function lovr.draw(pass)
   if (os.clock()>time) then
     time=os.clock()+0.005
-    status, webdata, headers = http.request("http://localhost:1469")
-    data=json.decode(webdata)
+    pcall(function()
+      status, webdata, headers = http.request("http://localhost:1469")
+      data=json.decode(webdata)
+    end)
   end
   --pass:setColor(.1, .1, .12)
   --pass:plane(0, 0, 0, 100, 100, -math.pi / 2, 1, 0, 0)

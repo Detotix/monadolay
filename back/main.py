@@ -1,5 +1,6 @@
 from threading import Thread
 from atexit import register as atexit_register
+from signal import signal, SIGINT, SIGTERM, SIGQUIT
 from time import sleep, time
 from sys import exit as sys_exit
 from pathlib import Path
@@ -16,7 +17,7 @@ shared.vrloc=Path(__file__).parent.parent
 print(Path(__file__).parent.parent)
 
 
-def close():
+def close(a=None, b=None):
     for proc in process_iter(['pid', 'name']):
         try:
             if proc.info['name'] == 'lovr':
@@ -25,9 +26,12 @@ def close():
         except (NoSuchProcess, AccessDenied):
             print("[MAIN] Couldn't find LÖVR process")
     print("[MAIN] closing")
+    shared.closed=True
 
-atexit_register(close)
-
+#atexit_register(close)
+signal(SIGQUIT, close)
+signal(SIGINT, close)
+signal(SIGTERM, close)
 
 import server
 import systemkey
@@ -56,6 +60,7 @@ def main():
         mute_click()
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())
+    close()
     sys_exit()
     systemkey_thread.join()
     gui_thread.join()

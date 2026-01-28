@@ -31,3 +31,4 @@ def start_gui():
 
     destroy_context()
     shared.closed=True
+    print("[GUI] closed")
