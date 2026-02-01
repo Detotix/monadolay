@@ -13,7 +13,8 @@ This project was created because WayVR had stability issues with nvidia and didn
 
 ## Note
 
-Currently contains system-specific code for the HTC Vive headset and KDE Plasma. The KDE Plasma code does not restrict the program's functionality, but the HTC Vive code currently does.
+Currently contains system-specific code for the HTC Vive headset and KDE Plasma. 
+The KDE Plasma code does not restrict the program's functionality, but the HTC Vive code currently does.
 
 ## Requirements
 
