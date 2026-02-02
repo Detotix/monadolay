@@ -1,3 +1,5 @@
-*/__pycache__/ 
+**/__pycache__/**
 monado-ctl
 *.AppImage
+**/test.py
+**/**test.py

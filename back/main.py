@@ -5,7 +5,7 @@ from time import sleep, time
 from sys import exit as sys_exit
 from pathlib import Path
 from psutil import process_iter, NoSuchProcess, AccessDenied
-import pulsectl
+import other.detect_vr
 import other.system
 #import tracemalloc 
 #tracemalloc.start()
@@ -42,13 +42,13 @@ def mute_click():
     if timing.last_mute_click <= time() and shared.systemkey_left:
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
-        shared.show_mute=not mic_muted
+        shared.data["show_mute"]=not mic_muted
         timing.last_mute_click = time() + 0.20
 
 def main():
     print(__file__)
 
-    shared.show_mute=other.system.is_mic_muted()
+    shared.data["show_mute"]=other.system.is_mic_muted()
 
     server_thread=Thread(target=server.run, daemon=True)
     server_thread.start()
@@ -58,6 +58,18 @@ def main():
     gui_thread.start()
     while True:
         sleep(0.05)
+        other.detect_vr.update_vr_tracker()
+        if (shared.shared_stored and shared.activeinstance):
+            shared.activeinstance=True
+            shared.data["rendermode"]=False
+        else:
+            foundactive=False
+            for i, process in enumerate(shared.shared_stored):
+                if other.detect_vr.is_vr_session_active(str(process['pid'])):
+                    foundactive=True
+                    break
+            shared.activeinstance=foundactive
+            shared.data["rendermode"]=not foundactive
         if shared.closed==True:
             break
         mute_click()

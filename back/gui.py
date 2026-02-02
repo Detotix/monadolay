@@ -3,17 +3,17 @@ from shared import shared, positioning
 import other.system
 
 def change_rendermode():
-    shared.rendermode=not shared.rendermode
+    shared.data["rendermode"]=not shared.data["rendermode"]
     print("[GUI] changed rendermode")
 
 def change_mutepos(sender):
-    positioning.datachange=True
+    shared.data["datachange"]=True
     positioning.positions["mute"][get_item_label(sender)]=get_value(sender)
 def change_showmute():
     mic_muted=other.system.is_mic_muted()
     print("[GUI]", mic_muted)
     other.system.set_mic_mute(not mic_muted)
-    shared.show_mute=not mic_muted
+    shared.data["show_mute"]=not mic_muted
     print("[GUI] changed show_mute")
 
 def open_devoptions():

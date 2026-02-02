@@ -3,9 +3,14 @@ local http = require 'http'
 local shared = require 'shared'
 local boundaries = require 'boundaries'
 local drender = require 'default_render'
+local ffi = require("ffi") 
+ffi.cdef[[ 
+  int getpid(void); 
+]]
 
 local time=0
 function lovr.load()
+  
 end
 function lovr.draw(pass)
   for i, func in ipairs(shared.conditioned_renderfunctions) do
@@ -24,6 +29,10 @@ function lovr.update(dt)
       if shared.data["datachange"] then
         status2, webdata2, headers2 = http.request("http://localhost:1469/position")
         shared.positioning=json.decode(webdata2)
+      end
+      if shared.data["requestpid"] then
+        local pid=ffi.C.getpid()
+        http.request("http://localhost:1469/pid/"..pid)
       end
     end)
   end
