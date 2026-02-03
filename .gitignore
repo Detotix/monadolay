@@ -3,6 +3,3 @@ monado-ctl
 *.AppImage
 **/test.py
 **/**test.py
-**/old_**/**
-**/old_**.py/**
-**/old_**
