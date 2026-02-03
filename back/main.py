@@ -35,7 +35,7 @@ signal(SIGTERM, close)
 
 import server
 import systemkey
-import gui
+
 import other.system
 
 def mute_click():
@@ -54,10 +54,12 @@ def main():
     server_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
     systemkey_thread.start()
-    gui_thread=Thread(target=gui.start_gui, daemon=True)
-    gui_thread.start()
     while True:
         sleep(0.05)
+        #snapshot = tracemalloc.take_snapshot() 
+        #top_stats = snapshot.statistics("lineno") 
+        #for stat in top_stats[:20]: print(stat)
+        #print("-----"*5)
         other.detect_vr.update_vr_tracker()
         if (shared.shared_stored and shared.activeinstance):
             shared.activeinstance=True
