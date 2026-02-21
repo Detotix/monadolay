@@ -1,3 +1,4 @@
+import os
 from threading import Thread
 from atexit import register as atexit_register
 from signal import signal, SIGINT, SIGTERM, SIGQUIT
@@ -54,13 +55,23 @@ def main():
     server_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
     systemkey_thread.start()
+    shared.monado_pid=other.detect_vr.is_running("monado-service")
+    if not shared.monado_pid:
+        shared.closed=True
+        print("[MAIN] monado-service process not found, closing")
     while True:
         sleep(0.05)
+        shared.t4+=1
         #snapshot = tracemalloc.take_snapshot() 
         #top_stats = snapshot.statistics("lineno") 
         #for stat in top_stats[:20]: print(stat)
         #print("-----"*5)
-        other.detect_vr.update_vr_tracker()
+        if shared.t4==4:
+            shared.t4=0
+            if not os.path.exists(f"/proc/{shared.monado_pid}"):
+                shared.closed=True
+                print("[MAIN] monado-service process ended, closing")
+            other.detect_vr.update_vr_tracker()
         if (shared.shared_stored and shared.activeinstance):
             shared.activeinstance=True
             shared.data["rendermode"]=False
@@ -72,7 +83,7 @@ def main():
                     break
             shared.activeinstance=foundactive
             shared.data["rendermode"]=not foundactive
-        if shared.closed==True:
+        if shared.closed:
             break
         mute_click()
         #print(shared.systemkey_left,shared.systemkey_right)

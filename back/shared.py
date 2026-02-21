@@ -5,12 +5,14 @@ class shared:
     closed=False
     lovrpid=None
     activeinstance=False
-    nameignore=set(["envision", "steam.exe", "steam", "d3ddriverquery6"])
+    nameignore=set(["envision", "steam.exe", "steam", "d3ddriverquery6", "xalia.exe"])
     data={"rendermode": True, "show_mute": False, "datachange": False, "requestpid": True}
     shared_stored = []
+    monado_pid=None
+    t4=0
 class timing:
     last_mute_click=0
 
 
 class positioning:
-    positions={"mute": {"x":-0.3, "y":-0.27, "z":-0.5}}
+    positions={"mute": {"x":-0.3, "y":-0.17, "z":-0.5}}

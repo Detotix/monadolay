@@ -13,6 +13,20 @@ reignored_pids = set()
 
 active_vr_indicators = [b'monado_shm', b'ValveIPCSHM', b'libxrizer.so',b'libopenxr_monado.so']
 
+
+def is_running(process_name: str):
+    for pid in os.listdir("/proc"):
+        if pid.isdigit():
+            try:
+                with open(f"/proc/{pid}/comm", "r") as f:
+                    name = f.read().strip()
+                if name == process_name:
+                    return pid
+            except FileNotFoundError:
+                pass
+    return False
+
+
 def is_vr_session_active(pid):
     try:
         with open(f'/proc/{pid}/maps', 'rb') as f:

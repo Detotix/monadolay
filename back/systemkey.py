@@ -94,19 +94,23 @@ def main():
                 event = event_buf
         except xr.exception.EventUnavailable:
             event = None
-        if event is None:
+        try:
+            if event is None:
+            
+                xr.sync_actions(session, sync_info)
 
-            xr.sync_actions(session, sync_info)
+                left_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=left_action))
+                right_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=right_action))
 
-            left_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=left_action))
-            right_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=right_action))
-
-            shared.systemkey_left=left_state.is_active and left_state.current_state
-            shared.systemkey_right=right_state.is_active and right_state.current_state
-        else:
-            if event.type == xr.StructureType.EVENT_DATA_SESSION_STATE_CHANGED:
-                state_event = xr.EventDataSessionStateChanged.from_buffer(event)
-                if state_event.state in (xr.SessionState.EXITING, xr.SessionState.LOSS_PENDING):
-                    break
+                shared.systemkey_left=left_state.is_active and left_state.current_state
+                shared.systemkey_right=right_state.is_active and right_state.current_state
+            else:
+                if event.type == xr.StructureType.EVENT_DATA_SESSION_STATE_CHANGED:
+                    state_event = xr.EventDataSessionStateChanged.from_buffer(event)
+                    if state_event.state in (xr.SessionState.EXITING, xr.SessionState.LOSS_PENDING):
+                        break
+        except:
+            shared.closed=True
+            print("[SYSTEMKEY] error in systemkey thread, (monado was probably closed)")
 if __name__=="__main__":
     main()

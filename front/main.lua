@@ -14,7 +14,7 @@ function lovr.load()
 end
 function lovr.draw(pass)
   for i, func in ipairs(shared.conditioned_renderfunctions) do
-    if func[3]==shared.data[func[2]] then
+    if func[3]==shared.data[func[2]] or func[3]==shared.localdata[func[2]] then
       func[1](pass)
     end
   end

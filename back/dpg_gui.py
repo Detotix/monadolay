@@ -29,12 +29,17 @@ def open_muteposition():
         add_input_float(label="y", default_value=positioning.positions["mute"]["y"], callback=change_mutepos)
         add_input_float(label="z", default_value=positioning.positions["mute"]["z"], callback=change_mutepos)
 
+def boundaries():
+    with window(label="boundaries", no_close=False):
+        add_text("this is just a test, it will be used to create custom boundaries in the future")
+
 def start_gui():
     create_context()
     create_viewport(title='monadolay vr', width=600, height=300)    
 
     with window(label="vr", no_close=True):
         add_button(label="open devtools",callback=open_devoptions)
+        add_button(label="create boundaries",callback=boundaries)
 
     setup_dearpygui()
     show_viewport()
