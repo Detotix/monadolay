@@ -3,7 +3,7 @@ from shared import shared, positioning
 import other.system
 
 def change_rendermode():
-    shared.data["rendermode"]=not shared.data["rendermode"]
+    shared.renderswitch=not shared.renderswitch
     print("[GUI] changed rendermode")
 
 def change_mutepos(sender):

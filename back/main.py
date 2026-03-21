@@ -40,11 +40,15 @@ import systemkey
 import other.system
 
 def mute_click():
-    if timing.last_mute_click <= time() and shared.systemkey_left:
+    if not shared.systemkey_left and shared.unclicked_left:
+        shared.unclicked_left=False
+
+    if timing.last_mute_click <= time() and shared.systemkey_left and not shared.unclicked_left:
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
         shared.data["show_mute"]=not mic_muted
         timing.last_mute_click = time() + 0.20
+        shared.unclicked_left=True
 
 def main():
     print(__file__)
@@ -85,6 +89,8 @@ def main():
             shared.data["rendermode"]=not foundactive
         if shared.closed:
             break
+
+        #this part is for mute
         mute_click()
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())

@@ -8,8 +8,10 @@ class shared:
     nameignore=set(["envision", "steam.exe", "steam", "d3ddriverquery6", "xalia.exe"])
     data={"rendermode": True, "show_mute": False, "datachange": False, "requestpid": True}
     shared_stored = []
+    renderswitch=False
     monado_pid=None
     t4=0
+    unclicked_left=True
 class timing:
     last_mute_click=0
 

@@ -15,6 +15,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def get_data():
+    if shared.renderswitch:
+        shared.data["rendermode"]=False
     return dumps(shared.data)
 @app.route('/pid/<int:pid>')
 def get_pid(pid):
