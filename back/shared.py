@@ -5,6 +5,7 @@ class shared:
     closed=False
     lovrpid=None
     activeinstance=False
+    monado_task=None
     nameignore=set(["envision", "steam.exe", "steam", "d3ddriverquery6", "xalia.exe"])
     data={"rendermode": True, "show_mute": False, "datachange": False, "requestpid": True}
     shared_stored = []
@@ -12,6 +13,7 @@ class shared:
     monado_pid=None
     t4=0
     unclicked_left=True
+    settings={"openwindow": False}
 class timing:
     last_mute_click=0
 

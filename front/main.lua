@@ -2,7 +2,7 @@ local json = require 'lib/json'
 local http = require 'http'
 local shared = require 'shared'
 local boundaries = require 'boundaries'
-local drender = require 'default_render'
+local drender = require 'parts.default_render'
 local ffi = require("ffi") 
 ffi.cdef[[ 
   int getpid(void); 
@@ -22,13 +22,15 @@ function lovr.draw(pass)
 end
 function lovr.update(dt)
   if (os.clock()>time) then
-    time=os.clock()+0.005
+    time=os.clock()+0.05
     pcall(function()
       status, webdata, headers = http.request("http://localhost:1469")
       shared.data=json.decode(webdata)
       if shared.data["datachange"] then
         status2, webdata2, headers2 = http.request("http://localhost:1469/position")
         shared.positioning=json.decode(webdata2)
+        status2, webdata2, headers2 = http.request("http://localhost:1469/settings")
+        shared.settings=json.decode(webdata2)
       end
       if shared.data["requestpid"] then
         local pid=ffi.C.getpid()

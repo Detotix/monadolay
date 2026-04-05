@@ -28,8 +28,12 @@ def get_pid(pid):
 
 @app.route('/position')
 def get_position():
-    positioning.datachange=False
     return dumps(positioning.positions)
+
+@app.route('/settings')
+def get_settings():
+    positioning.datachange=False
+    return dumps(shared.settings)
 
 def run():
     app.run(port=1469)

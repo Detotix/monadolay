@@ -8,6 +8,7 @@ from pathlib import Path
 from psutil import process_iter, NoSuchProcess, AccessDenied
 import other.detect_vr
 import other.system
+import other.monado_tasks as monado_tasks
 #import tracemalloc 
 #tracemalloc.start()
 
@@ -51,7 +52,6 @@ def mute_click():
         shared.unclicked_left=True
 
 def main():
-    print(__file__)
 
     shared.data["show_mute"]=other.system.is_mic_muted()
 
@@ -63,6 +63,9 @@ def main():
     if not shared.monado_pid:
         shared.closed=True
         print("[MAIN] monado-service process not found, closing")
+    else:
+        shared.monado_task=monado_tasks.monado_task()
+        next(shared.monado_task)
     while True:
         sleep(0.05)
         shared.t4+=1
@@ -75,7 +78,11 @@ def main():
             if not os.path.exists(f"/proc/{shared.monado_pid}"):
                 shared.closed=True
                 print("[MAIN] monado-service process ended, closing")
-            other.detect_vr.update_vr_tracker()
+            if not shared.activeinstance:
+                other.detect_vr.update_vr_tracker()
+            else:
+                shared.monado_task.send({"name": "update_vr_tracker", "info": None})
+
         if (shared.shared_stored and shared.activeinstance):
             shared.activeinstance=True
             shared.data["rendermode"]=False
