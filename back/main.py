@@ -35,6 +35,8 @@ signal(SIGQUIT, close)
 signal(SIGINT, close)
 signal(SIGTERM, close)
 
+
+
 import server
 import systemkey
 
@@ -47,20 +49,24 @@ def mute_click():
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
         shared.data["show_mute"]=not mic_muted
-        timing.last_mute_click = time() + 0.01
+        timing.last_mute_click = time() + 0.003
         shared.unclicked_left=True
 
-def menu_click():
+def menu_click(local_monado_task):
     if not shared.systemkey_right and shared.unclicked_right:
         shared.unclicked_right=False
     
     if timing.last_menu_click <= time() and shared.systemkey_right and not shared.unclicked_right:
         #toggle menu
-        if "menu" in shared.render["render"]: shared.render["render"].remove("menu")
-        else: shared.render["render"].append("menu")
+        if "menu" in shared.render["render"]: 
+            shared.render["render"].remove("menu")
+            local_monado_task.send({"name": "overlay_input_off", "info": None})
+        else: 
+            local_monado_task.send({"name": "overlay_input_on", "info": None})
+            shared.render["render"].append("menu")
         
         shared.data["datachange"]=True
-        timing.last_menu_click = time() + 0.01
+        timing.last_menu_click = time() + 0.003
         shared.unclicked_right=True
 def main():
 
@@ -77,6 +83,7 @@ def main():
     else:
         local_monado_task=monado_tasks.monado_task()
         next(local_monado_task)
+    local_monado_task.send({"name": "overlay_input_on", "info": None})
     while True:
         sleep(0.05)
         shared.t4+=1
@@ -111,7 +118,7 @@ def main():
         #this part is for mute
         mute_click()
         #this part is for opening the menu
-        menu_click()
+        menu_click(local_monado_task)
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())
     close()

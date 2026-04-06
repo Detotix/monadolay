@@ -5,4 +5,5 @@ monado-ctl
 **/**test.py
 **/old_**
 **_values
+**/**test.lua
 libmonado_bindings/
