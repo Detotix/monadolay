@@ -24,5 +24,5 @@ The KDE Plasma code does not restrict the program's functionality, but the HTC V
 ## Features
 
 - Mute control
-- System key integration
+- showing battery
 

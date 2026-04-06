@@ -6,7 +6,9 @@ cd "$SCRIPT_DIR"
 "$SCRIPT_DIR/lovr-x86_64.AppImage" "$SCRIPT_DIR/front" &
 
 if [[ "$*" == *"--dev"* ]]; then
+    cd $SCRIPT_DIR/back
     /usr/bin/env python3 "$SCRIPT_DIR/back/main.py"
 else
-    /usr/bin/env python3 "$SCRIPT_DIR/back/dpg_gui_start.py"
+    cd $SCRIPT_DIR/back
+    /usr/bin/env python3 "$SCRIPT_DIR/back/gui/testing/dpg_gui_start.py"
 fi

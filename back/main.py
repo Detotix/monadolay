@@ -39,7 +39,6 @@ import server
 import systemkey
 
 import other.system
-
 def mute_click():
     if not shared.systemkey_left and shared.unclicked_left:
         shared.unclicked_left=False
@@ -48,9 +47,21 @@ def mute_click():
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
         shared.data["show_mute"]=not mic_muted
-        timing.last_mute_click = time() + 0.20
+        timing.last_mute_click = time() + 0.01
         shared.unclicked_left=True
 
+def menu_click():
+    if not shared.systemkey_right and shared.unclicked_right:
+        shared.unclicked_right=False
+    
+    if timing.last_menu_click <= time() and shared.systemkey_right and not shared.unclicked_right:
+        #toggle menu
+        if "menu" in shared.render["render"]: shared.render["render"].remove("menu")
+        else: shared.render["render"].append("menu")
+        
+        shared.data["datachange"]=True
+        timing.last_menu_click = time() + 0.01
+        shared.unclicked_right=True
 def main():
 
     shared.data["show_mute"]=other.system.is_mic_muted()
@@ -64,8 +75,8 @@ def main():
         shared.closed=True
         print("[MAIN] monado-service process not found, closing")
     else:
-        shared.monado_task=monado_tasks.monado_task()
-        next(shared.monado_task)
+        local_monado_task=monado_tasks.monado_task()
+        next(local_monado_task)
     while True:
         sleep(0.05)
         shared.t4+=1
@@ -81,7 +92,7 @@ def main():
             if not shared.activeinstance:
                 other.detect_vr.update_vr_tracker()
             else:
-                shared.monado_task.send({"name": "update_vr_tracker", "info": None})
+                local_monado_task.send({"name": "update_vr_tracker", "info": None})
 
         if (shared.shared_stored and shared.activeinstance):
             shared.activeinstance=True
@@ -99,6 +110,8 @@ def main():
 
         #this part is for mute
         mute_click()
+        #this part is for opening the menu
+        menu_click()
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())
     close()

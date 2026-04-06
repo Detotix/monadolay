@@ -1,5 +1,12 @@
+import sys
+import os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add it to Python's import path
+sys.path.insert(0, ROOT)
+
 from main import main
-import dpg_gui as dpg_gui
+import gui.testing.dpg_gui as dpg_gui
 from threading import Thread
 
 def start_main():
