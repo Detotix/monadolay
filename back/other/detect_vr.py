@@ -22,7 +22,7 @@ def is_running(process_name: str):
                     name = f.read().strip()
                 if name == process_name:
                     return pid
-            except FileNotFoundError:
+            except (FileNotFoundError, KeyError):
                 pass
     return False
 
@@ -57,7 +57,7 @@ def update_vr_tracker(check_duration=15):
         for entry in os.scandir('/proc'):
             if entry.is_dir() and entry.name.isdigit():
                 current_pids.add(entry.name)
-    except FileNotFoundError:
+    except (FileNotFoundError, KeyError):
         return
 
 
@@ -98,7 +98,7 @@ def check_is_vr(pid):
         with open(f'/proc/{pid}/maps', 'rb') as f:
             content = f.read()
             return any(kw in content for kw in vr_keywords)
-    except (PermissionError, FileNotFoundError, ProcessLookupError) as e:
+    except (PermissionError, FileNotFoundError, ProcessLookupError, KeyError) as e:
         if e is ProcessLookupError:
             ignore_pid(pid)
             print(f"[DETECT_VR] Process {pid} throw process lookup error; ignoring.")

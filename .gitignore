@@ -7,3 +7,9 @@ monado-ctl
 **_values
 **/**test.lua
 libmonado_bindings/
+**/**.so
+
+#temporary
+build.sh
+lua_bridge/**
+/front/bridge.lua

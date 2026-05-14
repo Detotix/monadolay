@@ -12,12 +12,11 @@ import other.monado_tasks as monado_tasks
 #import tracemalloc 
 #tracemalloc.start()
 
-from shared import shared, timing
+from shared import shared
 
 shared.vrloc=Path(__file__).parent.parent
 
 print(Path(__file__).parent.parent)
-
 
 def close(a=None, b=None):
     for proc in process_iter(['pid', 'name']):
@@ -42,21 +41,21 @@ import systemkey
 
 import other.system
 def mute_click():
-    if not shared.systemkey_left and shared.unclicked_left:
-        shared.unclicked_left=False
+    if not systemkey.shared.systemkey_left[0] and shared.systemkey_left[1]: shared.systemkey_left[2]=True
+    else: shared.systemkey_left[2]=False
 
-    if timing.last_mute_click <= time() and shared.systemkey_left and not shared.unclicked_left:
+    if shared.systemkey_left[2]:
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
         shared.data["show_mute"]=not mic_muted
-        timing.last_mute_click = time() + 0.003
-        shared.unclicked_left=True
+
+    shared.systemkey_left[1]=shared.systemkey_left[0]
 
 def menu_click(local_monado_task):
-    if not shared.systemkey_right and shared.unclicked_right:
-        shared.unclicked_right=False
+    if not systemkey.shared.systemkey_right[0] and shared.systemkey_right[1]: shared.systemkey_right[2]=True
+    else: shared.systemkey_right[2]=False
     
-    if timing.last_menu_click <= time() and shared.systemkey_right and not shared.unclicked_right:
+    if shared.systemkey_right[2]:
         #toggle menu
         if "menu" in shared.render["render"]: 
             shared.render["render"].remove("menu")
@@ -66,9 +65,20 @@ def menu_click(local_monado_task):
             shared.render["render"].append("menu")
         
         shared.data["datachange"]=True
-        timing.last_menu_click = time() + 0.003
-        shared.unclicked_right=True
 def main():
+    #
+    #try:
+    #    for proc in process_iter(['pid', 'name']):
+    #        try:
+    #            if proc.info['name'] == 'lovr':
+    #                print(f"[MAIN] Killing LÖVR process PID {proc.pid}")
+    #                proc.terminate()
+    #        except (NoSuchProcess, AccessDenied):
+    #            print("[MAIN] Couldn't find LÖVR process while starting (THIS IS GOOD)")
+    #except:
+    #    print("[MAIN] Error while trying to kill LÖVR process (STARTING)")
+    
+
 
     shared.data["show_mute"]=other.system.is_mic_muted()
 

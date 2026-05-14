@@ -102,8 +102,8 @@ def main():
                 left_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=left_action))
                 right_state = xr.get_action_state_boolean(session, xr.ActionStateGetInfo(action=right_action))
 
-                shared.systemkey_left=left_state.is_active and left_state.current_state
-                shared.systemkey_right=right_state.is_active and right_state.current_state
+                shared.systemkey_left[0]=left_state.is_active and left_state.current_state
+                shared.systemkey_right[0]=right_state.is_active and right_state.current_state
             else:
                 if event.type == xr.StructureType.EVENT_DATA_SESSION_STATE_CHANGED:
                     state_event = xr.EventDataSessionStateChanged.from_buffer(event)

@@ -24,7 +24,7 @@ function lovr.draw(pass)
 end
 function lovr.update(dt)
   if (os.clock()>time) then
-    time=os.clock()+0.05
+    time=os.clock()+0.035
     pcall(function()
       status, webdata, headers = http.request("http://localhost:1469")
       shared.data=json.decode(webdata)
