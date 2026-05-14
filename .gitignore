@@ -1,6 +1,7 @@
 **/__pycache__/**
 monado-ctl
 *.AppImage
+!lovr-monadolay.AppImage
 **/test.py
 **/**test.py
 **/old_**
@@ -8,6 +9,7 @@ monado-ctl
 **/**test.lua
 libmonado_bindings/
 **/**.so
+test/**
 
 #temporary
 build.sh

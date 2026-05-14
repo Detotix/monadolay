@@ -8,6 +8,7 @@ class shared:
     data={"rendermode": True, "show_mute": False, "datachange": False, "requestpid": True}
     shared_stored = []
     renderswitch=False
+    rendermodechange=False
     monado_pid=None
     t4=0
 

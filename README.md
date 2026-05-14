@@ -16,6 +16,13 @@ This project was created because WayVR had stability issues with nvidia and didn
 Currently contains system-specific code for the HTC Vive headset and KDE Plasma. 
 The KDE Plasma code does not restrict the program's functionality, but the HTC Vive code currently does.
 
+## Usage Note
+
+> [!NOTE]
+> Please use the `lovr-monadolay` AppImage instead of the original LÖVR build.  
+> This ensures that Monadolay can correctly distinguish between the game and the overlay.
+
+
 ## Requirements
 
 - Monado (running)

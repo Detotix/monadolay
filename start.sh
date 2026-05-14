@@ -3,7 +3,7 @@
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-"$SCRIPT_DIR/lovr-x86_64.AppImage" "$SCRIPT_DIR/front" &
+"$SCRIPT_DIR/lovr-monadolay.AppImage" "$SCRIPT_DIR/front" &
 
 if [[ "$*" == *"--dev"* ]]; then
     cd $SCRIPT_DIR/back

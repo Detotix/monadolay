@@ -11,21 +11,18 @@ def _battery_controller_right(monado, info):
     except:return None
 def _overlay_input_on(monado, info):
     for client in monado.clients():
-        if client.is_overlay():  
+        if client.is_overlay():
+            client.set_io_active(False)
+        else:
             client.set_io_active(True)
-        else:  
-            if client.name()=="monadolay_headless_instance": pass
-            elif client.name()=="LÖVR" and client.is_overlay() and not shared.shared.data["rendermode"]:
-                client.set_io_active(False)
+        if shared.shared.data["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
 def _overlay_input_off(monado, info):
     for client in monado.clients():
-        if client.is_overlay():  
-            if client.name()=="monadolay_headless_instance": pass
-            elif client.name()=="LÖVR" and client.is_overlay() and not shared.shared.data["rendermode"]:
-                client.set_io_active(False)
-        else:  
+        if client.is_overlay():
             client.set_io_active(True)
-
+        else:
+            client.set_io_active(False)
+        if shared.shared.data["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
 def _update_vr_tracker(monado, info):
     primary_client=False
     for client in monado.clients():
@@ -50,3 +47,4 @@ def monado_task():
             except:
                 print("[MONADO_TASK] Error in task execution")
                 print(f"[MONADO_TASK] Task: {task}")
+                traceback.print_exc()

@@ -59,9 +59,9 @@ def menu_click(local_monado_task):
         #toggle menu
         if "menu" in shared.render["render"]: 
             shared.render["render"].remove("menu")
-            local_monado_task.send({"name": "overlay_input_off", "info": None})
-        else: 
             local_monado_task.send({"name": "overlay_input_on", "info": None})
+        else: 
+            local_monado_task.send({"name": "overlay_input_off", "info": None})
             shared.render["render"].append("menu")
         
         shared.data["datachange"]=True
@@ -119,6 +119,11 @@ def main():
         menu_click(local_monado_task)
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())
+
+        if shared.rendermodechange!=shared.data["rendermode"]:
+            shared.rendermodechange=shared.data["rendermode"]
+            if shared.data["rendermode"]:local_monado_task.send({"name": "overlay_input_off", "info": None})
+            else:                        local_monado_task.send({"name": "overlay_input_on", "info": None})
     close()
     sys_exit()
     systemkey_thread.join()
