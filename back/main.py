@@ -55,7 +55,6 @@ def mute_click():
 def menu_click(local_monado_task):
     if not systemkey.shared.systemkey_right[0] and shared.systemkey_right[1]: shared.systemkey_right[2]=True
     else: shared.systemkey_right[2]=False
-    print(systemkey.shared.systemkey_right)
     if shared.systemkey_right[2]:
         #toggle menu
         if "menu" in shared.render["render"]: 

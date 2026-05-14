@@ -49,4 +49,4 @@ def monado_task():
                     result = tasks[task["name"]](monado, task["info"])
             except:
                 print("[MONADO_TASK] Error in task execution")
-                traceback.print_exc()
+                print(f"[MONADO_TASK] Task: {task}")
