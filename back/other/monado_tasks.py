@@ -1,6 +1,7 @@
 from libmonado_bindings import Monado, DeviceRole
 import other.detect_vr
 import shared
+import traceback
 
 def _battery_controller_left(monado, info):
     try:return int(monado.device_from_role(DeviceRole.LEFT).battery_status().charge*100)
@@ -14,13 +15,13 @@ def _overlay_input_on(monado, info):
             client.set_io_active(True)
         else:  
             if client.name()=="monadolay_headless_instance": pass
-            elif client.name()=="LÖVR" and client.is_overlay() and not shared.data["rendermode"]:
+            elif client.name()=="LÖVR" and client.is_overlay() and not shared.shared.data["rendermode"]:
                 client.set_io_active(False)
 def _overlay_input_off(monado, info):
     for client in monado.clients():
         if client.is_overlay():  
             if client.name()=="monadolay_headless_instance": pass
-            elif client.name()=="LÖVR" and client.is_overlay() and not shared.data["rendermode"]:
+            elif client.name()=="LÖVR" and client.is_overlay() and not shared.shared.data["rendermode"]:
                 client.set_io_active(False)
         else:  
             client.set_io_active(True)
@@ -48,3 +49,4 @@ def monado_task():
                     result = tasks[task["name"]](monado, task["info"])
             except:
                 print("[MONADO_TASK] Error in task execution")
+                traceback.print_exc()

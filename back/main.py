@@ -18,6 +18,7 @@ shared.vrloc=Path(__file__).parent.parent
 
 print(Path(__file__).parent.parent)
 
+
 def close(a=None, b=None):
     for proc in process_iter(['pid', 'name']):
         try:
@@ -54,7 +55,7 @@ def mute_click():
 def menu_click(local_monado_task):
     if not systemkey.shared.systemkey_right[0] and shared.systemkey_right[1]: shared.systemkey_right[2]=True
     else: shared.systemkey_right[2]=False
-    
+    print(systemkey.shared.systemkey_right)
     if shared.systemkey_right[2]:
         #toggle menu
         if "menu" in shared.render["render"]: 
@@ -65,20 +66,8 @@ def menu_click(local_monado_task):
             shared.render["render"].append("menu")
         
         shared.data["datachange"]=True
+    shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
-    #
-    #try:
-    #    for proc in process_iter(['pid', 'name']):
-    #        try:
-    #            if proc.info['name'] == 'lovr':
-    #                print(f"[MAIN] Killing LÖVR process PID {proc.pid}")
-    #                proc.terminate()
-    #        except (NoSuchProcess, AccessDenied):
-    #            print("[MAIN] Couldn't find LÖVR process while starting (THIS IS GOOD)")
-    #except:
-    #    print("[MAIN] Error while trying to kill LÖVR process (STARTING)")
-    
-
 
     shared.data["show_mute"]=other.system.is_mic_muted()
 
