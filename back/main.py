@@ -1,11 +1,15 @@
+
 import os
+import json
+
 from threading import Thread
 from atexit import register as atexit_register
 from signal import signal, SIGINT, SIGTERM, SIGQUIT
-from time import sleep, time
+from time import sleep, time, perf_counter
 from sys import exit as sys_exit
 from pathlib import Path
 from psutil import process_iter, NoSuchProcess, AccessDenied
+
 import other.detect_vr
 import other.system
 import other.monado_tasks as monado_tasks
@@ -17,9 +21,15 @@ from shared import shared
 shared.vrloc=Path(__file__).parent.parent
 
 print(Path(__file__).parent.parent)
+T_START=perf_counter()
+DATA_FOLDER=f"{os.path.expanduser('~')}/.local/share/monadolay"
 
-
+#closes lovr on exit
 def close(a=None, b=None):
+    print(T_START)
+    shared.saved_data["time_spend"]+=perf_counter()-T_START 
+    with open(f"{DATA_FOLDER}/data.json", "w") as f:
+        f.write(json.dumps(shared.saved_data))
     for proc in process_iter(['pid', 'name']):
         try:
             if proc.info['name'] == 'lovr':
@@ -67,6 +77,16 @@ def menu_click(local_monado_task):
         shared.data["datachange"]=True
     shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
+
+    #initial data folder check
+    if not os.path.exists(DATA_FOLDER) or not os.path.exists(f"{DATA_FOLDER}/data.json"):
+        os.makedirs(DATA_FOLDER,exist_ok=True)
+        with open(f"{DATA_FOLDER}/data.json", "w") as f:
+            f.write(json.dumps({"time_spend":0}))
+    with open(f"{DATA_FOLDER}/data.json", "r") as f:
+        shared.saved_data=json.load(f)
+
+
 
     shared.data["show_mute"]=other.system.is_mic_muted()
 
