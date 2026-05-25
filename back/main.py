@@ -9,14 +9,14 @@ from time import sleep, time, perf_counter
 from sys import exit as sys_exit
 from pathlib import Path
 from psutil import process_iter, NoSuchProcess, AccessDenied
-
+import named_pipe
 import other.detect_vr
 import other.system
 import other.monado_tasks as monado_tasks
 #import tracemalloc 
 #tracemalloc.start()
 
-from shared import shared
+from shared import shared, pipe
 
 shared.vrloc=Path(__file__).parent.parent
 
@@ -37,6 +37,8 @@ def close(a=None, b=None):
                 proc.terminate()
         except (NoSuchProcess, AccessDenied):
             print("[MAIN] Couldn't find LÖVR process")
+    os.remove("/tmp/monadolay_pipe_pl")
+    os.remove("/tmp/monadolay_pipe_lp")
     print("[MAIN] closing")
     shared.closed=True
 
@@ -85,15 +87,28 @@ def main():
             f.write(json.dumps({"time_spend":0}))
     with open(f"{DATA_FOLDER}/data.json", "r") as f:
         shared.saved_data=json.load(f)
-
-
-
-    shared.data["show_mute"]=other.system.is_mic_muted()
-
+    #creates named pipes if they dont exist
+    if not os.path.exists("/tmp/monadolay_pipe_pl"): os.mkfifo("/tmp/monadolay_pipe_pl")
+    if not os.path.exists("/tmp/monadolay_pipe_lp"): os.mkfifo("/tmp/monadolay_pipe_lp")
+    print("ok")
+    #pipe.lp_pipe=open("/tmp/monadolay_pipe_lp", "r")
+    pipe.pl_pipe=open("/tmp/monadolay_pipe_pl", "w")
+    print("ok")
+    #threads
     server_thread=Thread(target=server.run, daemon=True)
     server_thread.start()
+    pipe_thread=Thread(target=named_pipe.read_pipe_thread, daemon=True)
+    pipe_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
     systemkey_thread.start()
+    print("ok")
+    
+    #gets current mute state
+    shared.data["show_mute"]=other.system.is_mic_muted()
+    print("ok")
+    named_pipe.send_lua("show_mute",{"something":[shared.data["show_mute"]]})
+
+    #checking if monado-service is running
     shared.monado_pid=other.detect_vr.is_running("monado-service")
     if not shared.monado_pid:
         shared.closed=True
@@ -101,7 +116,12 @@ def main():
     else:
         local_monado_task=monado_tasks.monado_task()
         next(local_monado_task)
+    #initially turn on the overlay input
+    print("ok")
     local_monado_task.send({"name": "overlay_input_on", "info": None})
+    print("ok")
+    
+    #main loop
     while True:
         sleep(0.05)
         shared.t4+=1
@@ -144,11 +164,13 @@ def main():
             shared.rendermodechange=shared.data["rendermode"]
             if shared.data["rendermode"]:local_monado_task.send({"name": "overlay_input_off", "info": None})
             else:                        local_monado_task.send({"name": "overlay_input_on", "info": None})
+    #closing
     close()
     sys_exit()
     systemkey_thread.join()
     gui_thread.join()
     server_thread.join()
+    pipe_thread.join()
 
 if __name__=="__main__":
     main()

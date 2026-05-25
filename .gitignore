@@ -11,6 +11,8 @@ libmonado_bindings/
 **/**.so
 test/**
 
+/front/threads/**
+/back/named_pipe.py
 #temporary
 build.sh
 lua_bridge/**
