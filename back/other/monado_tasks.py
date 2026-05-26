@@ -1,6 +1,6 @@
 from libmonado_bindings import Monado, DeviceRole
 import other.detect_vr
-import shared
+from shared import shared, change
 import traceback
 
 def _battery_controller_left(monado, info):
@@ -15,14 +15,14 @@ def _overlay_input_on(monado, info):
             client.set_io_active(False)
         else:
             client.set_io_active(True)
-        if shared.shared.data["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
+        if change.up("data")["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
 def _overlay_input_off(monado, info):
     for client in monado.clients():
         if client.is_overlay():
             client.set_io_active(True)
         else:
             client.set_io_active(False)
-        if shared.shared.data["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
+        if change.up("data")["rendermode"] or client.name()=="monadolay_headless_instance": client.set_io_active(True)
 def _update_vr_tracker(monado, info):
     primary_client=False
     for client in monado.clients():

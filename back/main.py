@@ -13,10 +13,11 @@ import named_pipe
 import other.detect_vr
 import other.system
 import other.monado_tasks as monado_tasks
+import pipe_sending
 #import tracemalloc 
 #tracemalloc.start()
 
-from shared import shared, pipe
+from shared import shared, pipe, change
 
 shared.vrloc=Path(__file__).parent.parent
 
@@ -60,7 +61,7 @@ def mute_click():
     if shared.systemkey_left[2]:
         mic_muted=other.system.is_mic_muted()
         other.system.set_mic_mute(not mic_muted)
-        shared.data["show_mute"]=not mic_muted
+        change.up("data", {"show_mute": not mic_muted})
 
     shared.systemkey_left[1]=shared.systemkey_left[0]
 
@@ -69,14 +70,16 @@ def menu_click(local_monado_task):
     else: shared.systemkey_right[2]=False
     if shared.systemkey_right[2]:
         #toggle menu
-        if "menu" in shared.render["render"]: 
-            shared.render["render"].remove("menu")
+        if "menu" in change.up("render")["render"]: 
+            shared.direct_data.render["render"].remove("menu")
+            change.up("render", {})
             local_monado_task.send({"name": "overlay_input_on", "info": None})
         else: 
+            shared.direct_data.render["render"].append("menu")
+            change.up("render", {})
             local_monado_task.send({"name": "overlay_input_off", "info": None})
-            shared.render["render"].append("menu")
         
-        shared.data["datachange"]=True
+        change.up("data", {"datachange": True})
     shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
 
@@ -92,7 +95,7 @@ def main():
     if not os.path.exists("/tmp/monadolay_pipe_lp"): os.mkfifo("/tmp/monadolay_pipe_lp")
     print("ok")
     #pipe.lp_pipe=open("/tmp/monadolay_pipe_lp", "r")
-    pipe.pl_pipe=open("/tmp/monadolay_pipe_pl", "w")
+    pipe_sending.pipe.pl_pipe=open("/tmp/monadolay_pipe_pl", "w")
     print("ok")
     #threads
     server_thread=Thread(target=server.run, daemon=True)
@@ -104,9 +107,9 @@ def main():
     print("ok")
     
     #gets current mute state
-    shared.data["show_mute"]=other.system.is_mic_muted()
+    change.up("data", {"show_mute": other.system.is_mic_muted()})
     print("ok")
-    named_pipe.send_lua("show_mute",{"something":[shared.data["show_mute"]]})
+    #named_pipe.send_lua("show_mute",{"something":[shared.data["show_mute"]]})
 
     #checking if monado-service is running
     shared.monado_pid=other.detect_vr.is_running("monado-service")
@@ -141,7 +144,8 @@ def main():
 
         if (shared.shared_stored and shared.activeinstance):
             shared.activeinstance=True
-            shared.data["rendermode"]=False
+            if change.up("data")["rendermode"]:
+                change.up("data", {"rendermode": False})
         else:
             foundactive=False
             for i, process in enumerate(shared.shared_stored):
@@ -149,7 +153,8 @@ def main():
                     foundactive=True
                     break
             shared.activeinstance=foundactive
-            shared.data["rendermode"]=not foundactive
+            if change.up("data")["rendermode"]!=foundactive:
+                change.up("data", {"rendermode": not foundactive})
         if shared.closed:
             break
 
@@ -160,9 +165,9 @@ def main():
         #print(shared.systemkey_left,shared.systemkey_right)
         #print(tracemalloc.get_traced_memory())
 
-        if shared.rendermodechange!=shared.data["rendermode"]:
-            shared.rendermodechange=shared.data["rendermode"]
-            if shared.data["rendermode"]:local_monado_task.send({"name": "overlay_input_off", "info": None})
+        if shared.rendermodechange!=change.up("data")["rendermode"]:
+            shared.rendermodechange=change.up("data")["rendermode"]
+            if change.up("data")["rendermode"]:local_monado_task.send({"name": "overlay_input_off", "info": None})
             else:                        local_monado_task.send({"name": "overlay_input_on", "info": None})
     #closing
     close()
