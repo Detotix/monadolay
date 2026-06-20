@@ -1,6 +1,7 @@
 
 import os
 import json
+import presence
 
 from threading import Thread
 from atexit import register as atexit_register
@@ -17,6 +18,7 @@ import other.monado_tasks as monado_tasks
 #tracemalloc.start()
 
 from shared import shared
+
 
 shared.vrloc=Path(__file__).parent.parent
 
@@ -77,6 +79,7 @@ def menu_click(local_monado_task):
         shared.data["datachange"]=True
     shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
+    presence.discord_presence()
 
     #initial data folder check
     if not os.path.exists(DATA_FOLDER) or not os.path.exists(f"{DATA_FOLDER}/data.json"):
@@ -130,8 +133,11 @@ def main():
                     break
             shared.activeinstance=foundactive
             shared.data["rendermode"]=not foundactive
+            
         if shared.closed:
             break
+        if shared.data["rendermode"]:
+            presence.stop_playing_game()
 
         #this part is for mute
         mute_click()

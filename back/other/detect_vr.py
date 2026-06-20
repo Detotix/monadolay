@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import presence
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from shared import shared
 
@@ -115,6 +116,8 @@ def register_vr_process(pid):
                 ignore_pid(pid)
             if not pid in reignored_pids:
                 print(f"[DETECT_VR] Registered VR process: {name} (PID: {pid})")
+                if not name in ["rundll32.exe", "python3"] and "exe" in name:
+                    presence.playing_game(name.replace(".exe", ""))
                 shared.shared_stored.append({"name": name, "pid": int(pid)})
             else:
                 print(f"[DETECT_VR] PID {pid} (name: {name}) was recently unregistered; skipping addition to shared_stored.")
