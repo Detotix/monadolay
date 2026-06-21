@@ -17,6 +17,7 @@ shared.render={render={}}
 shared.data={rendermode=false, show_mute=false, datachange=false, create_boundaries=false}
 shared.conditioned_renderfunctions={}
 shared.localdata={}
+shared.lp_pipe=nil
 shared.renderfunctions={}
 shared.localcolor={renderfull={.2, .2, .2, 1}}
 return shared

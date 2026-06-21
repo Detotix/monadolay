@@ -11,7 +11,8 @@ libmonado_bindings/
 **/**.so
 test/**
 
-#temporary
 build.sh
 lua_bridge/**
 /front/bridge.lua
+*.html
+*.bin

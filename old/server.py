@@ -1,3 +1,10 @@
+#
+# THIS FILE IS DEPRECATED, IT IS NOT USED ANYMORE, BUT I KEEP IT FOR FUTURE REFERENCE
+#
+#
+#
+#
+
 
 import os
 from json import dumps, loads
@@ -5,9 +12,7 @@ from logging import getLogger, WARNING
 import other.detect_vr
 import other.monado_tasks
 from flask import Flask
-from shared import shared, positioning
-import other.monado_tasks
-
+from shared import shared,change
 getLogger("werkzeug").setLevel(WARNING)
 
 
@@ -18,11 +23,11 @@ next(monado_task.local_monado_task)
 @app.route('/')
 def get_data():
     if shared.renderswitch:
-        shared.data["rendermode"]=False
-    return dumps(shared.data)
+        change.up("data",{"rendermode": False})
+    return dumps(change.up("data"))
 @app.route('/pid/<int:pid>')
 def get_pid(pid):
-    shared.data["requestpid"] = False
+    change.up("data", {"requestpid": False})
     shared.lovrpid=pid
     other.detect_vr.ignore_pid(str(pid))
     other.detect_vr.ignore_pid(str(os.getpid()))
@@ -30,14 +35,14 @@ def get_pid(pid):
 
 @app.route('/position')
 def get_position():
-    return dumps(positioning.positions)
+    return dumps(change.up("positions"))
 @app.route('/render')
 def get_render():
-    return dumps(shared.render)
+    return dumps(change.up("render"))
 @app.route('/settings')
 def get_settings():
-    positioning.datachange=False
-    return dumps(shared.settings)
+    #positioning.datachange=False
+    return dumps(change.up("settings"))
 @app.route('/monado/<task>')
 def get_monado_task(task):
     monado_task_result=monado_task.local_monado_task.send({"name": task, "info": None})
@@ -46,4 +51,5 @@ def get_monado_task(task):
     else:
         return dumps({"result": monado_task_result})
 def run():
-    app.run(port=1469)
+    pass
+    #app.run(port=1469)

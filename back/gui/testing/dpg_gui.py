@@ -1,5 +1,5 @@
 from dearpygui.dearpygui import window, get_value,  get_item_label, add_text, add_button, add_input_float, create_context, create_viewport, setup_dearpygui, show_viewport, is_dearpygui_running, render_dearpygui_frame, destroy_context
-from shared import shared, positioning
+from shared import shared, change
 import other.system
 
 def change_rendermode():
@@ -7,13 +7,13 @@ def change_rendermode():
     print("[GUI] changed rendermode")
 
 def change_mutepos(sender):
-    shared.data["datachange"]=True
-    positioning.positions["mute"][get_item_label(sender)]=get_value(sender)
+    change.up("data", {"datachange": True})
+    change.up("positions",{"mute": {get_item_label(sender):get_value(sender)}})    
 def change_showmute():
     mic_muted=other.system.is_mic_muted()
     print("[GUI]", mic_muted)
     other.system.set_mic_mute(not mic_muted)
-    shared.data["show_mute"]=not mic_muted
+    change.up("data", {"show_mute": not mic_muted})
     print("[GUI] changed show_mute")
 
 def open_devoptions():
@@ -25,9 +25,9 @@ def open_devoptions():
 def open_muteposition():
     with window(label="positioning", no_close=False):
         add_text("use this to position the mute icon in vr")
-        add_input_float(label="x", default_value=positioning.positions["mute"]["x"], callback=change_mutepos)
-        add_input_float(label="y", default_value=positioning.positions["mute"]["y"], callback=change_mutepos)
-        add_input_float(label="z", default_value=positioning.positions["mute"]["z"], callback=change_mutepos)
+        add_input_float(label="x", default_value=change.up("positions")["mute"]["x"], callback=change_mutepos)
+        add_input_float(label="y", default_value=change.up("positions")["mute"]["y"], callback=change_mutepos)
+        add_input_float(label="z", default_value=change.up("positions")["mute"]["z"], callback=change_mutepos)
 
 def boundaries():
     with window(label="boundaries", no_close=False):
