@@ -38,8 +38,8 @@ def close(a=None, b=None):
                 proc.terminate()
         except (NoSuchProcess, AccessDenied):
             print("[MAIN] Couldn't find LÖVR process")
-    os.remove("/tmp/monadolay_pipe_pl")
-    os.remove("/tmp/monadolay_pipe_lp")
+    if os.path.exists("/tmp/monadolay_pipe_pl"): os.remove("/tmp/monadolay_pipe_pl")
+    if os.path.exists("/tmp/monadolay_pipe_lp"): os.remove("/tmp/monadolay_pipe_lp")
     print("[MAIN] closing")
     shared.closed=True
 
@@ -50,7 +50,7 @@ signal(SIGTERM, close)
 
 
 
-import server
+#import server
 import systemkey
 
 import other.system
@@ -82,7 +82,6 @@ def menu_click(local_monado_task):
         change.up("data", {"datachange": True})
     shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
-
     #initial data folder check
     if not os.path.exists(DATA_FOLDER) or not os.path.exists(f"{DATA_FOLDER}/data.json"):
         os.makedirs(DATA_FOLDER,exist_ok=True)
@@ -98,8 +97,8 @@ def main():
     pipe_sending.pipe.pl_pipe=open("/tmp/monadolay_pipe_pl", "w")
     print("ok")
     #threads
-    server_thread=Thread(target=server.run, daemon=True)
-    server_thread.start()
+    #server_thread=Thread(target=server.run, daemon=True)
+    #server_thread.start()
     pipe_thread=Thread(target=named_pipe.read_pipe_thread, daemon=True)
     pipe_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
@@ -174,7 +173,7 @@ def main():
     sys_exit()
     systemkey_thread.join()
     gui_thread.join()
-    server_thread.join()
+    #server_thread.join()
     pipe_thread.join()
 
 if __name__=="__main__":

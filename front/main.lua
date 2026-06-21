@@ -1,4 +1,3 @@
-local json = require 'lib/json'
 local named_pipe = require 'lib/named_pipe'
 local http = require 'http'
 local shared = require 'shared'
@@ -25,6 +24,8 @@ function lovr.load()
     print("[ MAIN (LOVR) ] writing pipe opened")
   end
   named_pipe.pipe_send(pipe,"pid", {pid})
+
+  Pipe_channel = lovr.thread.getChannel('pipe_channel')
   local thread = lovr.thread.newThread(assert(io.open(lovr.filesystem.getSource().."/threads/named_pipe.lua","rb")):read("*a"))
   thread:start()
 
@@ -40,26 +41,43 @@ function lovr.draw(pass)
   end
 end
 
+local function merge_shallow(target, source)
+  for k, v in pairs(source) do
+    target[k] = v
+  end
+end
 
 function lovr.update(dt)
-
-  if (os.clock()>time) then
-    time=os.clock()+0.035
-    pcall(function()
-      status, webdata, headers = http.request("http://localhost:1469")
-      shared.data=json.decode(webdata)
-      if shared.data["datachange"] then
-        status2, webdata2, headers2 = http.request("http://localhost:1469/position")
-        shared.positioning=json.decode(webdata2)
-        status2, webdata2, headers2 = http.request("http://localhost:1469/settings")
-        shared.settings=json.decode(webdata2)
-        status2, webdata2, headers2 = http.request("http://localhost:1469/render")
-        shared.render=json.decode(webdata2)
-      end
-      if shared.data["requestpid"] then
-        local pid=ffi.C.getpid()
-        http.request("http://localhost:1469/pid/"..pid)
-      end
-    end)
+  while Pipe_channel:peek() do
+    local message = Pipe_channel:pop()
+    if message["data_type"]=="position" then
+      merge_shallow(shared.positioning,message["data_value"])
+    elseif message["data_type"]=="settings" then
+      merge_shallow(shared.settings, message["data_value"])
+    elseif message["data_type"]=="render" then
+      merge_shallow(shared.render, message["data_value"])
+    elseif message["data_type"]=="data" then
+      merge_shallow(shared.data, message["data_value"])
+    end
+    message=nil
   end
+  -- if (os.clock()>time) then
+  --   time=os.clock()+0.035
+  --   pcall(function()
+  --     status, webdata, headers = http.request("http://localhost:1469")
+  --     shared.data=json.decode(webdata)
+  --     if shared.data["datachange"] then
+  --       status2, webdata2, headers2 = http.request("http://localhost:1469/position")
+  --       shared.positioning=json.decode(webdata2)
+  --       status2, webdata2, headers2 = http.request("http://localhost:1469/settings")
+  --       shared.settings=json.decode(webdata2)
+  --       status2, webdata2, headers2 = http.request("http://localhost:1469/render")
+  --       shared.render=json.decode(webdata2)
+  --     end
+  --     if shared.data["requestpid"] then
+  --       local pid=ffi.C.getpid()
+  --       http.request("http://localhost:1469/pid/"..pid)
+  --     end
+  --   end)
+  --end
 end

@@ -1,6 +1,7 @@
 import json
 class pipe:
     pl_pipe=None
+    lp_pipe=None
     def close_pipe():
         pipe.pl_pipe.write("close\n")
         pipe.pl_pipe.flush()

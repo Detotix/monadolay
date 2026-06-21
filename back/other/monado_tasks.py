@@ -1,6 +1,6 @@
 from libmonado_bindings import Monado, DeviceRole
 import other.detect_vr
-from shared import shared, change
+from shared import change
 import traceback
 
 def _battery_controller_left(monado, info):

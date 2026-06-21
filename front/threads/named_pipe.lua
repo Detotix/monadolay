@@ -3,6 +3,11 @@ local filesystem = require "lovr.filesystem"
 local timer = require "lovr.timer" 
 local json = require "lib/json"
 
+local channel = thread.getChannel('pipe_channel')
+
+
+PIPE_DEBUG=false
+
 print("[ PIPE (LOVR) ] Waiting for writer...")
 
 local file = nil
@@ -25,8 +30,15 @@ while cont do
         if line == "close" then
             cont = false
         else
-            local data = json.decode(line)
-            print("[PIPE LUA] received data from python: " ..tostring(data.data_type) .. " = " .. tostring(data.data_value))
+            pcall(function()
+                local data = json.decode(line)
+                channel:push(data)
+                if PIPE_DEBUG then
+                    print("[PIPE LUA] received data from python: " ..tostring(data.data_type) .. " = " .. tostring(line))
+                end
+                data = nil
+                line=nil
+            end)
         end
     end
 end

@@ -1,3 +1,10 @@
+#
+# THIS FILE IS DEPRECATED, IT IS NOT USED ANYMORE, BUT I KEEP IT FOR FUTURE REFERENCE
+#
+#
+#
+#
+
 
 import os
 from json import dumps, loads
@@ -6,8 +13,6 @@ import other.detect_vr
 import other.monado_tasks
 from flask import Flask
 from shared import shared,change
-import other.monado_tasks
-
 getLogger("werkzeug").setLevel(WARNING)
 
 
@@ -46,4 +51,5 @@ def get_monado_task(task):
     else:
         return dumps({"result": monado_task_result})
 def run():
-    app.run(port=1469)
+    pass
+    #app.run(port=1469)
