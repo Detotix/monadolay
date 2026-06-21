@@ -61,7 +61,7 @@ def set_mic_mute(mute: bool):
         )
         
         remote_object.invokeShortcut("mic_mute")
-        time.sleep(0.15) 
+        time.sleep(0.10) 
         
 
         if is_mic_muted() != mute:

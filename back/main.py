@@ -57,13 +57,13 @@ import systemkey
 
 import other.system
 def mute_click():
+    mic_muted=other.system.is_mic_muted()
     if not systemkey.shared.systemkey_left[0] and shared.systemkey_left[1]: shared.systemkey_left[2]=True
     else: shared.systemkey_left[2]=False
 
     if shared.systemkey_left[2]:
-        mic_muted=other.system.is_mic_muted()
-        other.system.set_mic_mute(not mic_muted)
         change.up("data", {"show_mute": not mic_muted})
+        other.system.set_mic_mute(not mic_muted)
 
     shared.systemkey_left[1]=shared.systemkey_left[0]
 
@@ -160,7 +160,7 @@ def main():
                 change.up("data", {"rendermode": not foundactive})
         if shared.closed:
             break
-        if shared.data["rendermode"]:
+        if change.up("data")["rendermode"]:
             presence.stop_playing_game()
 
         #this part is for mute

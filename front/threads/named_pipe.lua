@@ -30,7 +30,7 @@ while cont do
         if line == "close" then
             cont = false
         else
-            pcall(function()
+            local ok, err pcall(function()
                 local data = json.decode(line)
                 channel:push(data)
                 if PIPE_DEBUG then
@@ -39,6 +39,9 @@ while cont do
                 data = nil
                 line=nil
             end)
+            if err then
+                print("[ PIPE (LOVR) ] Error decoding JSON: " .. err .. " | Line content: " .. tostring(line))
+            end
         end
     end
 end
