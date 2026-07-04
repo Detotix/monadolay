@@ -1,7 +1,6 @@
 from libmonado_bindings import Monado, DeviceRole
 import other.detect_vr
-from shared import change
-import traceback
+from shared import change, shared
 
 def _battery_controller_left(monado, info):
     try:return int(monado.device_from_role(DeviceRole.LEFT).battery_status().charge*100)
@@ -44,7 +43,10 @@ def monado_task():
                 task = yield result
                 if task["name"] in tasks:
                     result = tasks[task["name"]](monado, task["info"])
-            except:
+            except Exception as e:
+                if not e==RuntimeError:
+                    print("[MONADO_TASK] Monado was probably closeds (exiting)")
+                    shared.closed=True
+                    break
                 print("[MONADO_TASK] Error in task execution")
                 print(f"[MONADO_TASK] Task: {task}")
-                traceback.print_exc()

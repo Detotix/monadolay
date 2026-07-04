@@ -61,10 +61,14 @@ class close:
                         proc.terminate()
                 except (NoSuchProcess, AccessDenied):
                     print("[MAIN] Couldn't find LÖVR process")
+
+            #stops the discord presence
+            presence.stop_presence()
+
             #deletes pipe files
             if os.path.exists("/tmp/monadolay_pipe_pl"): os.remove("/tmp/monadolay_pipe_pl")
             if os.path.exists("/tmp/monadolay_pipe_lp"): os.remove("/tmp/monadolay_pipe_lp")
-            
+
             print("[MAIN] closing")
             shared.closed=True
             close.closed=True

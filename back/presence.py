@@ -31,7 +31,10 @@ def stop_playing_game():
             )
         except:
             pass
-
+def stop_presence():
+    print("[PRESENCE] closing")
+    current_presence.rpc.clear()
+    current_presence.rpc.close()
 def discord_presence():
 
     client_id = "1517909906345295974"

@@ -1,8 +1,5 @@
 local named_pipe = require 'lib/named_pipe'
-local http = require 'http'
 local shared = require 'shared'
-local boundaries = require 'parts/boundaries'
-local drender = require 'parts/default_render'
 local ffi = require("ffi") 
 ffi.cdef[[ 
   int getpid(void); 
