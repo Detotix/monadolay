@@ -23,10 +23,13 @@ class change:
     #function to update or get the data
 
     
-     def up(key, new_data=None):
-        if new_data:
+     def up(key, new_data=None, update=False):
+        if new_data or update:
             current = getattr(shared.direct_data, key)
-            merged = current | new_data
-            setattr(shared.direct_data, key, merged)
-            pipe.send(key, merged)
+            try:
+                merged = current | new_data
+                setattr(shared.direct_data, key, merged)
+                pipe.send(key, merged)
+            except:
+                pipe.send(key, current)
         return getattr(shared.direct_data, key)

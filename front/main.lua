@@ -1,32 +1,28 @@
 local named_pipe = require 'lib/named_pipe'
 local shared = require 'shared'
+local menu = require 'parts/menu'
+local boundaries = require 'parts/boundaries'
+local drender = require 'parts/default_render'
 local ffi = require("ffi") 
 ffi.cdef[[ 
   int getpid(void); 
 ]]
-
 local time=0
 function lovr.load()
   local pid=ffi.C.getpid()
   print("[ MAIN (LOVR) ] Starting LÖVR application")
   print("[ MAIN (LOVR) ] path "..lovr.filesystem.getSource())
 
-  local pipe = nil
-  while not pipe do
-    pipe = io.open("/tmp/monadolay_pipe_lp", "w")
-    if not pipe then
-      print("[ MAIN (LOVR) ] waiting for writing pipe")
-      lovr.timer.sleep(0.1)
-    end
-    print("[ MAIN (LOVR) ] writing pipe opened")
-  end
-  named_pipe.pipe_send(pipe,"pid", {pid})
+  named_pipe.openpipe()
+  
+  named_pipe.pipe_send("pid", {pid})
 
   Pipe_channel = lovr.thread.getChannel('pipe_channel')
   local thread = lovr.thread.newThread(assert(io.open(lovr.filesystem.getSource().."/threads/named_pipe.lua","rb")):read("*a"))
   thread:start()
 
 end
+
 function lovr.draw(pass)
   for i, func in ipairs(shared.conditioned_renderfunctions) do
     if func[3]==shared.data[func[2]] or func[3]==shared.localdata[func[2]] then
@@ -55,6 +51,10 @@ function lovr.update(dt)
       merge_shallow(shared.render, message["data_value"])
     elseif message["data_type"]=="data" then
       merge_shallow(shared.data, message["data_value"])
+    elseif message["data_type"]=="monado_task_result" then
+      local table={}
+      table[message["data_value"]["type"]]=message["data_value"]["result"]
+      merge_shallow(shared.monado_results, table)
     end
     message=nil
   end

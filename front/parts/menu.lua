@@ -1,5 +1,6 @@
 local shared = require 'shared'
 local renderhelp = require 'lib/renderhelp'
+local named_pipe = require 'lib/named_pipe'
 local menu = {}
 
 function menu.rendercontroller(pass)
@@ -8,8 +9,11 @@ function menu.rendercontroller(pass)
     pass:setColor(.255, .255, .255, 1)
     local lx, ly, lz = renderhelp.get_p(left_x, left_y, left_z, left_angle, left_ax, left_ay, left_az, -0.05)
     local rx, ry, rz = renderhelp.get_p(right_x, right_y, right_z, right_angle, right_ax, right_ay, right_az, -0.05)
-    pass:text(shared.monado("battery_controller_left")["result"], lx, ly, lz, 0.2, left_angle, left_ax, left_ay, left_az, 0, "center", "middle")
-    pass:text(shared.monado("battery_controller_right")["result"], rx, ry, rz, 0.2, right_angle, right_ax, right_ay, right_az, 0, "center", "middle")
+    local ok, result=pcall(function (...)
+        pass:text(tostring(shared.monado("battery_controller_left")), lx, ly, lz, 0.2, left_angle, left_ax, left_ay, left_az, 0, "center", "middle")
+        pass:text(tostring(shared.monado("battery_controller_right")), rx, ry, rz, 0.2, right_angle, right_ax, right_ay, right_az, 0, "center", "middle")
+    end)
+
     pass:setColor(.0, .0, .0, 0.6)
     x, y, z, angle, ax, ay, az = lovr.headset.getPose("head")
     pass:cube(x, y, z, 5, angle, ax, ay, az, "fill", 1, 1)

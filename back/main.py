@@ -23,7 +23,10 @@ from shared import shared, pipe, change
 
 shared.vrloc=Path(__file__).parent.parent
 
+#import server
 import sys
+import systemkey
+import other.system
 
 
 print(f"[MAIN] folder of installation : {Path(__file__).parent.parent}")
@@ -79,12 +82,7 @@ signal(SIGQUIT, close.close)
 signal(SIGINT, close.close)
 signal(SIGTERM, close.close)
 
-
-
-#import server
-import systemkey
-
-import other.system
+#buttons
 def mute_click():
     mic_muted=other.system.is_mic_muted()
     if not systemkey.shared.systemkey_left[0] and shared.systemkey_left[1]: shared.systemkey_left[2]=True
@@ -103,15 +101,17 @@ def menu_click(local_monado_task):
         #toggle menu
         if "menu" in change.up("render")["render"]: 
             shared.direct_data.render["render"].remove("menu")
-            change.up("render", {})
+            change.up("render", update=True)
             local_monado_task.send({"name": "overlay_input_on", "info": None})
         else: 
             shared.direct_data.render["render"].append("menu")
-            change.up("render", {})
+            change.up("render", update=True)
             local_monado_task.send({"name": "overlay_input_off", "info": None})
         
         change.up("data", {"datachange": True})
     shared.systemkey_right[1]=shared.systemkey_right[0]
+#end of buttons
+
 def main():
 
     #discord rich presence

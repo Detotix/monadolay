@@ -17,3 +17,4 @@ lua_bridge/**
 *.html
 *.bin
 startm.sh
+calc-lines.sh
