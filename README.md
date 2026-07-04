@@ -9,7 +9,7 @@ A Monado overlay for VR applications.
 
 ## Motivation
 
-This project was created because WayVR had stability issues with nvidia and didn't utilize the system key, leaving a button unused.
+because i got annoyed of what already is there.
 
 ## Note
 
@@ -32,4 +32,5 @@ The KDE Plasma code does not restrict the program's functionality, but the HTC V
 
 - Mute control
 - showing battery
-
+- discord rich presence
+- play time calculation (cant access yet)
