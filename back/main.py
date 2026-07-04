@@ -23,32 +23,57 @@ from shared import shared, pipe, change
 
 shared.vrloc=Path(__file__).parent.parent
 
-print(Path(__file__).parent.parent)
+import sys
+
+
+print(f"[MAIN] folder of installation : {Path(__file__).parent.parent}")
 T_START=perf_counter()
 DATA_FOLDER=f"{os.path.expanduser('~')}/.local/share/monadolay"
 
-#closes lovr on exit
-def close(a=None, b=None):
-    print(T_START)
-    shared.saved_data["time_spend"]+=perf_counter()-T_START 
-    with open(f"{DATA_FOLDER}/data.json", "w") as f:
-        f.write(json.dumps(shared.saved_data))
-    for proc in process_iter(['pid', 'name']):
-        try:
-            if proc.info['name'] == 'lovr':
-                print(f"[MAIN] Killing LÖVR process PID {proc.pid}")
-                proc.terminate()
-        except (NoSuchProcess, AccessDenied):
-            print("[MAIN] Couldn't find LÖVR process")
-    if os.path.exists("/tmp/monadolay_pipe_pl"): os.remove("/tmp/monadolay_pipe_pl")
-    if os.path.exists("/tmp/monadolay_pipe_lp"): os.remove("/tmp/monadolay_pipe_lp")
-    print("[MAIN] closing")
-    shared.closed=True
+
+
+class close:
+    #state
+    closed=False
+
+        
+    #this is so it ignores errors that may accure while exiting    
+    def _noerrorexit(exctype, value, traceback):
+        pass
+
+    #closes lovr on exit
+    def close(a=None, b=None):
+        if not close.closed:
+            print(T_START)
+
+            #turns off exeptions so it can close like intended
+            sys.excepthook=close._noerrorexit
+            
+            #saves time played
+            shared.saved_data["time_spend"]+=perf_counter()-T_START 
+            with open(f"{DATA_FOLDER}/data.json", "w") as f:
+                f.write(json.dumps(shared.saved_data))
+            #closes lovr
+            for proc in process_iter(['pid', 'name']):
+                try:
+                    if proc.info['name'] == 'lovr':
+                        print(f"[MAIN] Killing LÖVR process PID {proc.pid}")
+                        proc.terminate()
+                except (NoSuchProcess, AccessDenied):
+                    print("[MAIN] Couldn't find LÖVR process")
+            #deletes pipe files
+            if os.path.exists("/tmp/monadolay_pipe_pl"): os.remove("/tmp/monadolay_pipe_pl")
+            if os.path.exists("/tmp/monadolay_pipe_lp"): os.remove("/tmp/monadolay_pipe_lp")
+            
+            print("[MAIN] closing")
+            shared.closed=True
+            close.closed=True
+            
 
 #atexit_register(close)
-signal(SIGQUIT, close)
-signal(SIGINT, close)
-signal(SIGTERM, close)
+signal(SIGQUIT, close.close)
+signal(SIGINT, close.close)
+signal(SIGTERM, close.close)
 
 
 
@@ -84,6 +109,8 @@ def menu_click(local_monado_task):
         change.up("data", {"datachange": True})
     shared.systemkey_right[1]=shared.systemkey_right[0]
 def main():
+
+    #discord rich presence
     presence.discord_presence()
 
     #initial data folder check
@@ -93,13 +120,15 @@ def main():
             f.write(json.dumps({"time_spend":0}))
     with open(f"{DATA_FOLDER}/data.json", "r") as f:
         shared.saved_data=json.load(f)
+
+
     #creates named pipes if they dont exist
     if not os.path.exists("/tmp/monadolay_pipe_pl"): os.mkfifo("/tmp/monadolay_pipe_pl")
     if not os.path.exists("/tmp/monadolay_pipe_lp"): os.mkfifo("/tmp/monadolay_pipe_lp")
-    print("ok")
+     
     #pipe.lp_pipe=open("/tmp/monadolay_pipe_lp", "r")
     pipe_sending.pipe.pl_pipe=open("/tmp/monadolay_pipe_pl", "w")
-    print("ok")
+     
     #threads
     #server_thread=Thread(target=server.run, daemon=True)
     #server_thread.start()
@@ -107,25 +136,24 @@ def main():
     pipe_thread.start()
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
     systemkey_thread.start()
-    print("ok")
+     
     
     #gets current mute state
     change.up("data", {"show_mute": other.system.is_mic_muted()})
-    print("ok")
+     
     #named_pipe.send_lua("show_mute",{"something":[shared.data["show_mute"]]})
 
     #checking if monado-service is running
     shared.monado_pid=other.detect_vr.is_running("monado-service")
     if not shared.monado_pid:
-        shared.closed=True
         print("[MAIN] monado-service process not found, closing")
+        close.close()
     else:
         local_monado_task=monado_tasks.monado_task()
         next(local_monado_task)
     #initially turn on the overlay input
-    print("ok")
+
     local_monado_task.send({"name": "overlay_input_on", "info": None})
-    print("ok")
     
     #main loop
     while True:
@@ -138,7 +166,7 @@ def main():
         if shared.t4==4:
             shared.t4=0
             if not os.path.exists(f"/proc/{shared.monado_pid}"):
-                shared.closed=True
+                close.close()
                 print("[MAIN] monado-service process ended, closing")
             if not shared.activeinstance:
                 other.detect_vr.update_vr_tracker()
@@ -175,7 +203,7 @@ def main():
             if change.up("data")["rendermode"]:local_monado_task.send({"name": "overlay_input_off", "info": None})
             else:                        local_monado_task.send({"name": "overlay_input_on", "info": None})
     #closing
-    close()
+    close.close()
     sys_exit()
     systemkey_thread.join()
     gui_thread.join()

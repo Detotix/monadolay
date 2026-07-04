@@ -16,3 +16,4 @@ lua_bridge/**
 /front/bridge.lua
 *.html
 *.bin
+startm.sh
