@@ -30,6 +30,7 @@ def _update_vr_tracker(monado, info):
     if not primary_client:
         print("[MONADO_TASK] No primary client found")
         other.detect_vr.update_vr_tracker()
+        shared.activeinstance=False
     return None
 def monado_task():
     

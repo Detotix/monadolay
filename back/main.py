@@ -182,13 +182,19 @@ def main():
             if change.up("data")["rendermode"]:
                 change.up("data", {"rendermode": False})
         else:
+
             foundactive=False
-            for i, process in enumerate(shared.shared_stored):
-                if other.detect_vr.is_vr_session_active(str(process['pid'])):
+            #i think this was overcomplified
+            if change.up("data")["rendermode"]:
+                for i, process in enumerate(shared.shared_stored):
+                    if other.detect_vr.is_vr_session_active(str(process['pid'])):
+                        foundactive=True
+                        break
+            else:
+                if not shared.shared_stored==[]:
                     foundactive=True
-                    break
             shared.activeinstance=foundactive
-            if change.up("data")["rendermode"]!=foundactive:
+            if not foundactive:
                 change.up("data", {"rendermode": not foundactive})
         if shared.closed:
             break
