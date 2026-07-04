@@ -1,5 +1,3 @@
-local http = require 'http'
-local json = require 'lib/json'
 local named_pipe = require 'lib/named_pipe'
 local shared={}
 

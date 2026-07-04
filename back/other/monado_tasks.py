@@ -36,18 +36,20 @@ def monado_task():
     
     tasks={"overlay_input_on": _overlay_input_on, "overlay_input_off": _overlay_input_off, "update_vr_tracker": _update_vr_tracker, "battery_controller_left": _battery_controller_left, "battery_controller_right": _battery_controller_right}
     result=None
-
-    with Monado.auto_connect() as monado:
-        print("[MONADO_TASK] Connected to Monado")
-        while True:
-            try:
-                task = yield result
-                if task["name"] in tasks:
-                    result = tasks[task["name"]](monado, task["info"])
-            except Exception as e:
-                if not e==RuntimeError:
-                    print("[MONADO_TASK] Monado was probably closeds (exiting)")
-                    shared.closed=True
-                    break
-                print("[MONADO_TASK] Error in task execution")
-                print(f"[MONADO_TASK] Task: {task}")
+    try:
+        with Monado.auto_connect() as monado:
+            print("[MONADO_TASK] Connected to Monado")
+            while True:
+                try:
+                    task = yield result
+                    if task["name"] in tasks:
+                        result = tasks[task["name"]](monado, task["info"])
+                except Exception as e:
+                    if not e==RuntimeError:
+                        print("[MONADO_TASK] Monado was probably closeds (exiting)")
+                        shared.closed=True
+                        break
+                    print("[MONADO_TASK] Error in task execution")
+                    print(f"[MONADO_TASK] Task: {task}")
+    except:
+        shared.closed=True

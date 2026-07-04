@@ -219,6 +219,7 @@ def main():
     gui_thread.join()
     #server_thread.join()
     pipe_thread.join()
+    print("[MAIN] ENDED")
 
 if __name__=="__main__":
     main()

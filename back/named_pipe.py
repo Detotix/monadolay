@@ -10,8 +10,10 @@ PIPE_DEBUG=False
 
 class monado_task:
     local_monado_task=other.monado_tasks.monado_task()
-next(monado_task.local_monado_task)
-
+try:
+    next(monado_task.local_monado_task)
+except:
+    shared.closed=True
 
 #thread of reading the named pipe of lua
 def read_pipe_thread():
