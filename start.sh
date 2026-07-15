@@ -3,12 +3,21 @@
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-"$SCRIPT_DIR/lovr-monadolay.AppImage" "$SCRIPT_DIR/front" &
+if [[ "$*" == *"--controlpaneltest"* ]]; then
 
-if [[ "$*" == *"--dev"* ]]; then
     cd $SCRIPT_DIR/back
-    /usr/bin/env python3 "$SCRIPT_DIR/back/main.py"
+    /usr/bin/env "$SCRIPT_DIR/back/gui/release/control_panel_start.py" mainless
+
 else
-    cd $SCRIPT_DIR/back
-    /usr/bin/env python3 "$SCRIPT_DIR/back/gui/testing/dpg_gui_start.py"
+
+    "$SCRIPT_DIR/lovr-monadolay.AppImage" "$SCRIPT_DIR/front" &
+
+    if [[ "$*" == *"--dev"* ]]; then
+        cd $SCRIPT_DIR/back
+        /usr/bin/env "$SCRIPT_DIR/back/gui/release/control_panel_start.py"
+    else
+        cd $SCRIPT_DIR/back
+        /usr/bin/env "$SCRIPT_DIR/back/gui/testing/dpg_gui_start.py"
+    fi
+
 fi
