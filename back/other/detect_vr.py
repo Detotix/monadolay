@@ -1,12 +1,14 @@
 import os
 import time
 import sys
+
+from pydbus.registration import traceback
 import presence
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from shared import shared
 
 monitoring_queue = {}
-ignored_pids = set() 
+ignored_pids = set()
 vr_keywords = [b'openxr', b'DETECT_VR', b'vrclient', b'libovr', b'oculus', b'steamvr']
 last_active_pids = {}
 reignored_pids = set()
@@ -46,13 +48,13 @@ def ignore_pid(pid):
     shared.shared_stored = [p for p in shared.shared_stored if str(p['pid']) != pid]
     reignored_pids.add(pid)
 
-def update_vr_tracker(check_duration=15):
+def update_vr_tracker(check_duration=25):
 
     global monitoring_queue, ignored_pids, last_active_pids
-    
+
     now = time.time()
     current_pids = set()
-    
+
 
     try:
         for entry in os.scandir('/proc'):
@@ -63,7 +65,7 @@ def update_vr_tracker(check_duration=15):
 
 
     ignored_pids &= current_pids
-    
+
 
     monitoring_pids = list(monitoring_queue.keys())
     try:
@@ -77,12 +79,14 @@ def update_vr_tracker(check_duration=15):
                 elif (now - monitoring_queue[pid]) > check_duration:
                     ignored_pids.add(pid)
                     del monitoring_queue[pid]
-    except KeyError:
-        print("[DETECT_VR] KeyError in monitoring queue.")
+    except KeyError as e:
+        if not pid in ignored_pids:
+            print("[DETECT_VR] KeyError in monitoring queue.")
+            print(traceback.format_exc())
 
     known_active = set(last_active_pids.keys())
     new_pids = current_pids - known_active - ignored_pids - set(monitoring_queue.keys())
-    
+
     for pid in new_pids:
         if check_is_vr(pid):
             register_vr_process(pid)
@@ -121,7 +125,6 @@ def register_vr_process(pid):
                 shared.shared_stored.append({"name": name, "pid": int(pid)})
             else:
                 print(f"[DETECT_VR] PID {pid} (name: {name}) was recently unregistered; skipping addition to shared_stored.")
-            
+
     except:
         pass
-
