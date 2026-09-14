@@ -39,6 +39,7 @@ def stop_presence():
         current_presence.rpc.clear()
         current_presence.rpc.close()
 def discord_presence():
+    current_presence.enabled=shared.shared.saved_data["discord_presence"]
     if current_presence.enabled:
         try:
             client_id = "1517909906345295974"
@@ -49,3 +50,5 @@ def discord_presence():
         except:
             current_presence.enabled=False
             print("[PRESENCE] Discord is not open (disabling the presence!)")
+    else:
+        print("[PRESENCE] (DISABLED)")

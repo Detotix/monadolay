@@ -114,9 +114,6 @@ def menu_click(local_monado_task):
 
 def main():
 
-    #discord rich presence
-    presence.discord_presence()
-
     #initial data folder check
     if not os.path.exists(DATA_FOLDER) or not os.path.exists(f"{DATA_FOLDER}/data.json"):
         os.makedirs(DATA_FOLDER,exist_ok=True)
@@ -124,6 +121,9 @@ def main():
             f.write(json.dumps({}))
     with open(f"{DATA_FOLDER}/data.json", "r") as f:
         shared.saved_data={"discord_presence":True, "time_spend":0} | json.load(f)
+
+    #discord rich presence
+    presence.discord_presence()
 
     #creates named pipes if they dont exist
     if not os.path.exists("/tmp/monadolay_pipe_pl"): os.mkfifo("/tmp/monadolay_pipe_pl")
