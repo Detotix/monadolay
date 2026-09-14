@@ -120,7 +120,7 @@ def main():
         with open(f"{DATA_FOLDER}/data.json", "w") as f:
             f.write(json.dumps({}))
     with open(f"{DATA_FOLDER}/data.json", "r") as f:
-        shared.saved_data={"discord_presence":True, "time_spend":0} | json.load(f)
+        shared.saved_data={"discord_presence":True, "time_spend":0,"predetect_games":[]} | json.load(f)
 
     #creates named pipes if they dont exist
     if not os.path.exists("/tmp/monadolay_pipe_pl"): os.mkfifo("/tmp/monadolay_pipe_pl")

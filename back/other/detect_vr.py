@@ -3,6 +3,7 @@ import time
 import sys
 
 from pydbus.registration import traceback
+import traceback as tracea
 import presence
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from shared import shared
@@ -96,10 +97,14 @@ def update_vr_tracker(check_duration=25):
 
     shared.shared_stored = [p for p in shared.shared_stored if str(p['pid']) in current_pids]
     last_active_pids = {str(p['pid']): p['name'] for p in shared.shared_stored}
-
 def check_is_vr(pid):
 
     try:
+        with open(f'/proc/{pid}/comm', 'r') as f:
+            name = f.read().strip()
+            if name in shared.saved_data["predetect_games"]:
+                print(f"[PREDETECT] Found {name}")
+                return True
         with open(f'/proc/{pid}/maps', 'rb') as f:
             content = f.read()
             return any(kw in content for kw in vr_keywords)
@@ -114,7 +119,8 @@ def register_vr_process(pid):
     try:
         with open(f'/proc/{pid}/comm', 'r') as f:
             name = f.read().strip()
-
+            if not name in shared.saved_data["predetect_games"]:
+                shared.saved_data["predetect_games"].append(name)
         if not any(p['pid'] == int(pid) for p in shared.shared_stored):
             if name.lower() in shared.nameignore:
                 ignore_pid(pid)
