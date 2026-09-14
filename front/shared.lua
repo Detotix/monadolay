@@ -12,11 +12,12 @@ shared.conditioned_renderfunctions={}
 shared.localdata={}
 shared.lp_pipe=nil
 shared.renderfunctions={}
-shared.localcolor={renderfull={.2, .2, .2, 1}}
+shared.localcolor = { renderfull = { .2, .2, .2, 1 } }
+shared.proc_info = {type = "NO_GAME", name = "NO_GAME"}
 
 function shared.monado(task)
     named_pipe.pipe_send("monado_task", {task})
-    if shared.monado_results[task] then 
+    if shared.monado_results[task] then
         return shared.monado_results[task]
     end
 end

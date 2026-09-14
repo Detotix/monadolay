@@ -1,4 +1,5 @@
-from pypresence import Presence
+from pipe_sending import pipe
+from pypresence import Presence, PyPresenceException
 from time import perf_counter
 import shared
 
@@ -9,8 +10,10 @@ class current_presence:
     playing=False
 
 def playing_game(game_name):
+    current_presence.playing=True
+    pipe.send("proc_info", {"type":"GAME","name": game_name})
+
     if current_presence.enabled:
-        current_presence.playing=True
         try:
             current_presence.changetime=perf_counter()+40
             current_presence.rpc.update(
@@ -22,8 +25,10 @@ def playing_game(game_name):
         except:
             pass
 def stop_playing_game():
+    current_presence.playing=False
+    pipe.send("proc_info", {"type":"NO_GAME"})
+
     if current_presence.changetime<perf_counter() and current_presence.enabled:
-        current_presence.playing=False
         try:
             current_presence.rpc.update(
                 state="No game running",
@@ -47,7 +52,7 @@ def discord_presence():
             RPC.connect()
             current_presence.rpc=RPC
             stop_playing_game()
-        except:
+        except PyPresenceException:
             current_presence.enabled=False
             print("[PRESENCE] Discord is not open (disabling the presence!)")
     else:

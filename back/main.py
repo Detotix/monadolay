@@ -122,9 +122,6 @@ def main():
     with open(f"{DATA_FOLDER}/data.json", "r") as f:
         shared.saved_data={"discord_presence":True, "time_spend":0} | json.load(f)
 
-    #discord rich presence
-    presence.discord_presence()
-
     #creates named pipes if they dont exist
     if not os.path.exists("/tmp/monadolay_pipe_pl"): os.mkfifo("/tmp/monadolay_pipe_pl")
     if not os.path.exists("/tmp/monadolay_pipe_lp"): os.mkfifo("/tmp/monadolay_pipe_lp")
@@ -140,6 +137,8 @@ def main():
     systemkey_thread=Thread(target=systemkey.main, daemon=True)
     systemkey_thread.start()
 
+    #discord rich presence and ingame presence
+    presence.discord_presence()
 
     #gets current mute state
     change.up("data", {"show_mute": other.system.is_mic_muted()})

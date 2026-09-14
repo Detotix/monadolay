@@ -3,9 +3,9 @@ local shared = require 'shared'
 local menu = require 'parts/menu'
 local boundaries = require 'parts/boundaries'
 local drender = require 'parts/default_render'
-local ffi = require("ffi") 
-ffi.cdef[[ 
-  int getpid(void); 
+local ffi = require("ffi")
+ffi.cdef[[
+  int getpid(void);
 ]]
 local time=0
 function lovr.load()
@@ -14,7 +14,7 @@ function lovr.load()
   print("[ MAIN (LOVR) ] path "..lovr.filesystem.getSource())
 
   named_pipe.openpipe()
-  
+
   named_pipe.pipe_send("pid", {pid})
 
   Pipe_channel = lovr.thread.getChannel('pipe_channel')
@@ -30,7 +30,7 @@ function lovr.draw(pass)
     end
   end
   for index, value in ipairs(shared.render["render"]) do
-    shared.renderfunctions[value](pass) 
+    shared.renderfunctions[value](pass)
   end
 end
 
@@ -51,6 +51,11 @@ function lovr.update(dt)
       merge_shallow(shared.render, message["data_value"])
     elseif message["data_type"]=="data" then
       merge_shallow(shared.data, message["data_value"])
+    elseif message["data_type"]=="proc_info" then
+            merge_shallow(shared.proc_info, message["data_value"])
+            if (shared.proc_info.type=="GAME") then
+                print("[play warn] NOW PLAYING" .. shared.proc_info["name"])
+            end
     elseif message["data_type"]=="monado_task_result" then
       local table={}
       table[message["data_value"]["type"]]=message["data_value"]["result"]
