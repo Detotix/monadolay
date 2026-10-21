@@ -3,7 +3,6 @@ import time
 import sys
 
 from pydbus.registration import traceback
-import traceback as tracea
 import presence
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from shared import shared
@@ -103,8 +102,9 @@ def check_is_vr(pid):
         with open(f'/proc/{pid}/comm', 'r') as f:
             name = f.read().strip()
             if name in shared.saved_data["predetect_games"]:
-                print(f"[PREDETECT] Found {name}")
-                return True
+                if not name in shared.nameignore and not presence.current_presence.playing:
+                    print(f"[PREDETECT] Found game {name}")
+                    presence.starting_game(name)
         with open(f'/proc/{pid}/maps', 'rb') as f:
             content = f.read()
             return any(kw in content for kw in vr_keywords)

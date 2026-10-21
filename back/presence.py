@@ -9,6 +9,10 @@ class current_presence:
     changetime=0
     playing=False
 
+def starting_game(game_name):
+    current_presence.playing=True
+    pipe.send("proc_info", {"type":"STARTING_GAME","name": game_name.replace(".exe", "").replace("_", " ")})
+
 def playing_game(game_name):
     current_presence.playing=True
     pipe.send("proc_info", {"type":"GAME","name": game_name})

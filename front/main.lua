@@ -53,8 +53,8 @@ function lovr.update(dt)
       merge_shallow(shared.data, message["data_value"])
     elseif message["data_type"]=="proc_info" then
             merge_shallow(shared.proc_info, message["data_value"])
-            if (shared.proc_info.type=="GAME") then
-                print("[play warn] NOW PLAYING" .. shared.proc_info["name"])
+            if (shared.proc_info.type=="STARTING_GAME") then
+                print("[PLAY WARN] NOW PLAYING " .. shared.proc_info["name"])
             end
     elseif message["data_type"]=="monado_task_result" then
       local table={}
