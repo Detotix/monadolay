@@ -41,28 +41,28 @@ local function merge_shallow(target, source)
 end
 
 function lovr.update(dt)
-  while Pipe_channel:peek() do
-    local message = Pipe_channel:pop()
-    if message["data_type"]=="position" then
-      merge_shallow(shared.positioning,message["data_value"])
-    elseif message["data_type"]=="settings" then
-      merge_shallow(shared.settings, message["data_value"])
-    elseif message["data_type"]=="render" then
-      merge_shallow(shared.render, message["data_value"])
-    elseif message["data_type"]=="data" then
-      merge_shallow(shared.data, message["data_value"])
-    elseif message["data_type"]=="proc_info" then
+    while Pipe_channel:peek() do
+        local message = Pipe_channel:pop()
+        if message["data_type"]=="position" then
+            merge_shallow(shared.positioning,message["data_value"])
+        elseif message["data_type"]=="settings" then
+            merge_shallow(shared.settings, message["data_value"])
+        elseif message["data_type"]=="render" then
+            merge_shallow(shared.render, message["data_value"])
+        elseif message["data_type"]=="data" then
+            merge_shallow(shared.data, message["data_value"])
+        elseif message["data_type"]=="proc_info" then
             merge_shallow(shared.proc_info, message["data_value"])
             if (shared.proc_info.type=="STARTING_GAME") then
                 print("[PLAY WARN] NOW PLAYING " .. shared.proc_info["name"])
             end
-    elseif message["data_type"]=="monado_task_result" then
-      local table={}
-      table[message["data_value"]["type"]]=message["data_value"]["result"]
-      merge_shallow(shared.monado_results, table)
+        elseif message["data_type"]=="monado_task_result" then
+            local table={}
+            table[message["data_value"]["type"]]=message["data_value"]["result"]
+            merge_shallow(shared.monado_results, table)
+        end
+        message=nil
     end
-    message=nil
-  end
   -- if (os.clock()>time) then
   --   time=os.clock()+0.035
   --   pcall(function()

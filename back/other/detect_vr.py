@@ -5,7 +5,7 @@ import sys
 from pydbus.registration import traceback
 import presence
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from shared import shared
+from shared import shared, change
 
 monitoring_queue = {}
 ignored_pids = set()
@@ -103,6 +103,9 @@ def check_is_vr(pid):
             name = f.read().strip()
             if name in shared.saved_data["predetect_games"]:
                 if not name in shared.nameignore and not presence.current_presence.playing:
+                    change.up("data", {"launch": True, "launching_game": name.replace(".exe", "").replace("_", " ").replace("-", " ")})
+
+
                     print(f"[PREDETECT] Found game {name}")
                     presence.starting_game(name)
         with open(f'/proc/{pid}/maps', 'rb') as f:
@@ -119,7 +122,7 @@ def register_vr_process(pid):
     try:
         with open(f'/proc/{pid}/comm', 'r') as f:
             name = f.read().strip()
-            if not name in shared.saved_data["predetect_games"]:
+            if not name in shared.saved_data["predetect_games"] and not name in shared.nameignore:
                 shared.saved_data["predetect_games"].append(name)
         if not any(p['pid'] == int(pid) for p in shared.shared_stored):
             if name.lower() in shared.nameignore:
@@ -128,6 +131,7 @@ def register_vr_process(pid):
                 print(f"[DETECT_VR] Registered VR process: {name} (PID: {pid})")
                 if not name in ["rundll32.exe", "python3"] and "exe" in name:
                     presence.playing_game(name.replace(".exe", ""))
+                    change.up("data", {"launch": True, "launching_game": name.replace(".exe", "").replace("_", " ").replace("-", " ")})
                 shared.shared_stored.append({"name": name, "pid": int(pid)})
             else:
                 print(f"[DETECT_VR] PID {pid} (name: {name}) was recently unregistered; skipping addition to shared_stored.")

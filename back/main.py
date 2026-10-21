@@ -15,6 +15,7 @@ import other.detect_vr
 import other.system
 import other.monado_tasks as monado_tasks
 import pipe_sending
+import other.hooks
 #import tracemalloc
 #tracemalloc.start()
 
@@ -113,8 +114,9 @@ def menu_click(local_monado_task):
 #end of buttons
 
 def main():
-
-    #initial data folder check
+    # init of data change hooks
+    other.hooks.init_hooks()
+    # initial data folder check
     if not os.path.exists(DATA_FOLDER) or not os.path.exists(f"{DATA_FOLDER}/data.json"):
         os.makedirs(DATA_FOLDER,exist_ok=True)
         with open(f"{DATA_FOLDER}/data.json", "w") as f:

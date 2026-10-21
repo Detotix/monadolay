@@ -7,7 +7,7 @@ shared.monado_results={}
 shared.positioning={mute={x=-0.4, y=-0.17, z=-0.5}}
 shared.settings={openwindow=false}
 shared.render={render={}}
-shared.data={rendermode=false, show_mute=false, datachange=false, create_boundaries=false}
+shared.data={rendermode=false, show_mute=false, datachange=false, create_boundaries=false, launch=false, launching_game="None"}
 shared.conditioned_renderfunctions={}
 shared.localdata={}
 shared.lp_pipe=nil
